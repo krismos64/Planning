@@ -2,6 +2,13 @@ import { useState, useEffect } from "react";
 import { api } from "../services/api";
 
 interface DashboardData {
+  employees: {
+    _id: string;
+    name: string;
+    role: string;
+    contractHours: number;
+    workedHours: number;
+  }[];
   workloadData: {
     date: string;
     plannedHours: number;
@@ -24,14 +31,67 @@ interface DashboardData {
   }[];
 }
 
-// Données par défaut pour le développement
+// Données fictives étendues pour le dashboard
 const defaultData: DashboardData = {
+  employees: [
+    {
+      _id: "1",
+      name: "Jean Dupont",
+      role: "Développeur Senior",
+      contractHours: 35,
+      workedHours: 37,
+    },
+    {
+      _id: "2",
+      name: "Marie Martin",
+      role: "Designer UI/UX",
+      contractHours: 35,
+      workedHours: 35,
+    },
+    {
+      _id: "3",
+      name: "Bob Johnson",
+      role: "Managers",
+      contractHours: 170,
+      workedHours: 165,
+    },
+    {
+      _id: "4",
+      name: "Alice Brown",
+      role: "Support",
+      contractHours: 155,
+      workedHours: 160,
+    },
+    {
+      _id: "5",
+      name: "Charlie Davis",
+      role: "Marketing",
+      contractHours: 150,
+      workedHours: 145,
+    },
+    {
+      _id: "6",
+      name: "Eve Wilson",
+      role: "RH",
+      contractHours: 80,
+      workedHours: 75,
+    },
+    {
+      _id: "7",
+      name: "Frank Miller",
+      role: "Commercial",
+      contractHours: 40,
+      workedHours: 35,
+    },
+  ],
   workloadData: [
-    { date: "Lun", plannedHours: 160, actualHours: 155 },
-    { date: "Mar", plannedHours: 165, actualHours: 170 },
-    { date: "Mer", plannedHours: 170, actualHours: 165 },
-    { date: "Jeu", plannedHours: 155, actualHours: 160 },
-    { date: "Ven", plannedHours: 150, actualHours: 145 },
+    { date: "Lundi", plannedHours: 160, actualHours: 155 },
+    { date: "Mardi", plannedHours: 165, actualHours: 170 },
+    { date: "Mercredi", plannedHours: 170, actualHours: 165 },
+    { date: "Jeudi", plannedHours: 155, actualHours: 160 },
+    { date: "Vendredi", plannedHours: 150, actualHours: 145 },
+    { date: "Samedi", plannedHours: 80, actualHours: 75 },
+    { date: "Dimanche", plannedHours: 40, actualHours: 35 },
   ],
   employeeDistributionData: [
     { role: "Développeurs", count: 12 },
@@ -39,6 +99,8 @@ const defaultData: DashboardData = {
     { role: "Managers", count: 3 },
     { role: "Support", count: 8 },
     { role: "Marketing", count: 4 },
+    { role: "RH", count: 2 },
+    { role: "Commercial", count: 6 },
   ],
   vacationTrendData: [
     { month: "Jan", requests: 15, approved: 12, rejected: 3 },
@@ -55,29 +117,27 @@ const defaultData: DashboardData = {
 };
 
 export const useDashboardData = () => {
-  const [data, setData] = useState<DashboardData>(defaultData); // Initialiser avec les données par défaut
+  const [data, setData] = useState<DashboardData>(defaultData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchDashboardData = async () => {
     try {
-      setLoading(true);
       if (process.env.NODE_ENV === "development") {
-        // En développement, simuler un délai et retourner les données par défaut
         await new Promise((resolve) => setTimeout(resolve, 1000));
         setData(defaultData);
       } else {
-        // En production, faire les vrais appels API
-        const [workload, distribution, vacations, overtime] = await Promise.all(
-          [
+        const [employees, workload, distribution, vacations, overtime] =
+          await Promise.all([
+            api.employees.getAll(),
             api.stats.getWorkloadData(),
             api.stats.getEmployeeDistribution(),
             api.stats.getVacationTrends(),
             api.stats.getOvertimeData(),
-          ]
-        );
+          ]);
 
         setData({
+          employees,
           workloadData: workload,
           employeeDistributionData: distribution,
           vacationTrendData: vacations,
@@ -87,7 +147,6 @@ export const useDashboardData = () => {
       setError(null);
     } catch (err) {
       setError("Erreur lors du chargement des données");
-      // En cas d'erreur, utiliser les données par défaut
       setData(defaultData);
     } finally {
       setLoading(false);

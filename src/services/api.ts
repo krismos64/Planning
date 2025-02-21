@@ -1,5 +1,11 @@
 import { config } from "../config";
 import { Employee, VacationRequest } from "../types";
+import {
+  mockEmployees,
+  mockVacationRequests,
+  mockPlanning,
+  mockChartData,
+} from "./mockData";
 
 const API_URL = config.apiUrl;
 
@@ -7,6 +13,9 @@ export const api = {
   baseUrl: API_URL,
   employees: {
     getAll: async () => {
+      if (process.env.NODE_ENV === "development") {
+        return Promise.resolve(mockEmployees);
+      }
       const response = await fetch(`${API_URL}/employees`);
       if (!response.ok)
         throw new Error("Erreur lors de la récupération des employés");
@@ -56,6 +65,9 @@ export const api = {
       type: "jour" | "semaine" | "mois" | "année";
       employeeId?: string;
     }) => {
+      if (process.env.NODE_ENV === "development") {
+        return Promise.resolve(mockPlanning);
+      }
       const queryParams = new URLSearchParams({
         startDate: params.startDate.toISOString(),
         endDate: params.endDate.toISOString(),
@@ -152,6 +164,9 @@ export const api = {
     },
 
     getWorkloadData: async () => {
+      if (process.env.NODE_ENV === "development") {
+        return Promise.resolve(mockChartData.workloadData);
+      }
       const response = await fetch(`${API_URL}/stats/workload`);
       if (!response.ok)
         throw new Error(
@@ -161,6 +176,9 @@ export const api = {
     },
 
     getEmployeeDistribution: async () => {
+      if (process.env.NODE_ENV === "development") {
+        return Promise.resolve(mockChartData.employeeDistributionData);
+      }
       const response = await fetch(`${API_URL}/stats/distribution`);
       if (!response.ok)
         throw new Error(
@@ -170,6 +188,9 @@ export const api = {
     },
 
     getVacationTrends: async () => {
+      if (process.env.NODE_ENV === "development") {
+        return Promise.resolve(mockChartData.vacationTrendData);
+      }
       const response = await fetch(`${API_URL}/stats/vacations`);
       if (!response.ok)
         throw new Error(
@@ -179,6 +200,9 @@ export const api = {
     },
 
     getOvertimeData: async () => {
+      if (process.env.NODE_ENV === "development") {
+        return Promise.resolve(mockChartData.overtimeData);
+      }
       const response = await fetch(`${API_URL}/stats/overtime`);
       if (!response.ok)
         throw new Error(
@@ -190,6 +214,9 @@ export const api = {
 
   vacations: {
     getAll: async () => {
+      if (process.env.NODE_ENV === "development") {
+        return Promise.resolve(mockVacationRequests);
+      }
       const response = await fetch(`${API_URL}/vacations`);
       if (!response.ok)
         throw new Error("Erreur lors de la récupération des demandes de congé");

@@ -5,8 +5,6 @@ import {
   Bar,
   PieChart,
   Pie,
-  AreaChart,
-  Area,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -15,6 +13,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
+import { useTheme } from "../../context/ThemeContext";
 
 interface DashboardChartsProps {
   workloadData: {
@@ -39,129 +38,155 @@ interface DashboardChartsProps {
   }[];
 }
 
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AF19FF"];
+
 const DashboardCharts = ({
   workloadData,
   employeeDistributionData,
   vacationTrendData,
   overtimeData,
 }: DashboardChartsProps) => {
+  const { isDarkMode } = useTheme();
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+    <div className="space-y-8">
       {/* Graphique de charge de travail */}
-      <div className="bg-white p-4 md:p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Charge de travail</h3>
+      <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold mb-4 dark:text-white">
+          Charge de travail hebdomadaire
+        </h3>
         <div className="h-[300px] md:h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={workloadData}>
+            <LineChart
+              data={workloadData}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
+              <XAxis
+                dataKey="date"
+                tick={{ fill: isDarkMode ? "#fff" : "#000" }}
+              />
+              <YAxis tick={{ fill: isDarkMode ? "#fff" : "#000" }} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: isDarkMode ? "#374151" : "#fff",
+                  borderColor: isDarkMode ? "#4b5563" : "#ddd",
+                }}
+              />
               <Legend />
-              <Area
+              <Line
                 type="monotone"
                 dataKey="plannedHours"
-                name="Heures prévues"
                 stroke="#8884d8"
-                fill="#8884d8"
-                fillOpacity={0.3}
+                name="Heures planifiées"
               />
-              <Area
+              <Line
                 type="monotone"
                 dataKey="actualHours"
-                name="Heures réelles"
                 stroke="#82ca9d"
-                fill="#82ca9d"
-                fillOpacity={0.3}
+                name="Heures réelles"
               />
-            </AreaChart>
+            </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Répartition des employés */}
-      <div className="bg-white p-4 md:p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">
-          Répartition des employés par rôle
+      {/* Distribution des employés */}
+      <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold mb-4 dark:text-white">
+          Distribution des employés par rôle
         </h3>
         <div className="h-[300px] md:h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={employeeDistributionData}
-                dataKey="count"
-                nameKey="role"
                 cx="50%"
                 cy="50%"
-                outerRadius={100}
+                labelLine={false}
+                label={({ name, percent }) =>
+                  `${name} ${(percent * 100).toFixed(0)}%`
+                }
+                outerRadius={120}
                 fill="#8884d8"
-                label
+                dataKey="count"
               >
                 {employeeDistributionData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={
-                      ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#0088FE"][
-                        index % 5
-                      ]
-                    }
+                    fill={COLORS[index % COLORS.length]}
                   />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: isDarkMode ? "#374151" : "#fff",
+                  borderColor: isDarkMode ? "#4b5563" : "#ddd",
+                }}
+              />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Tendances des congés */}
-      <div className="bg-white p-4 md:p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Tendances des congés</h3>
+      {/* Tendance des congés */}
+      <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold mb-4 dark:text-white">
+          Tendance des demandes de congés
+        </h3>
         <div className="h-[300px] md:h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={vacationTrendData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
+              <XAxis
+                dataKey="month"
+                tick={{ fill: isDarkMode ? "#fff" : "#000" }}
+              />
+              <YAxis tick={{ fill: isDarkMode ? "#fff" : "#000" }} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: isDarkMode ? "#374151" : "#fff",
+                  borderColor: isDarkMode ? "#4b5563" : "#ddd",
+                }}
+              />
               <Legend />
-              <Bar
-                dataKey="requests"
-                name="Demandes"
-                fill="#8884d8"
-                stackId="a"
-              />
-              <Bar
-                dataKey="approved"
-                name="Approuvés"
-                fill="#82ca9d"
-                stackId="a"
-              />
-              <Bar
-                dataKey="rejected"
-                name="Refusés"
-                fill="#ff8042"
-                stackId="a"
-              />
+              <Bar dataKey="requests" fill="#8884d8" name="Demandes" />
+              <Bar dataKey="approved" fill="#82ca9d" name="Approuvées" />
+              <Bar dataKey="rejected" fill="#ff8042" name="Rejetées" />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Heures supplémentaires par département */}
-      <div className="bg-white p-4 md:p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">
+      {/* Heures supplémentaires */}
+      <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold mb-4 dark:text-white">
           Heures supplémentaires par département
         </h3>
         <div className="h-[300px] md:h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={overtimeData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="department" />
-              <YAxis yAxisId="left" />
-              <YAxis yAxisId="right" orientation="right" />
-              <Tooltip />
+              <XAxis
+                dataKey="department"
+                tick={{ fill: isDarkMode ? "#fff" : "#000" }}
+              />
+              <YAxis
+                yAxisId="left"
+                tick={{ fill: isDarkMode ? "#fff" : "#000" }}
+              />
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                tick={{ fill: isDarkMode ? "#fff" : "#000" }}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: isDarkMode ? "#374151" : "#fff",
+                  borderColor: isDarkMode ? "#4b5563" : "#ddd",
+                }}
+              />
               <Legend />
               <Line
                 yAxisId="left"
