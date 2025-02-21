@@ -110,6 +110,25 @@ export const api = {
         throw new Error("Erreur lors de la récupération des demandes de congé");
       return response.json();
     },
+
+    create: async (data: {
+      employeeId: string;
+      startDate: Date;
+      endDate: Date;
+      reason: string;
+    }) => {
+      const response = await fetch(`${API_URL}/vacations`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok)
+        throw new Error("Erreur lors de la création de la demande de congé");
+      return response.json();
+    },
+
     update: async (id: string, data: any) => {
       const response = await fetch(`${API_URL}/vacations/${id}`, {
         method: "PUT",

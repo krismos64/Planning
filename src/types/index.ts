@@ -27,11 +27,12 @@ export interface Shift {
 
 export interface VacationRequest {
   _id: string;
+  employeeId: string;
   employeeName: string;
   startDate: Date;
   endDate: Date;
-  status: "En attente" | "Approuvé" | "Refusé";
   reason: string;
+  status: "En attente" | "Approuvé" | "Refusé";
 }
 
 export interface DaySchedule {
