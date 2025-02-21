@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "cors": "^2.8.5",
     "date-fns": "^2.21.1",
+    "dotenv": "^16.4.7",
     "framer-motion": "^12.4.7",
     "lottie-react": "^2.4.1",
     "react": "^18.2.0",
