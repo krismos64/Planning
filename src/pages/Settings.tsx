@@ -1,6 +1,7 @@
 import { useState } from "react";
 import CompanySettings from "../components/settings/CompanySettings";
 import EmployeeSettings from "../components/settings/EmployeeSettings";
+import PreferencesSettings from "../components/settings/PreferencesSettings";
 
 type SettingsTab =
   | "company"
@@ -27,7 +28,7 @@ const Settings = () => {
       case "employees":
         return <EmployeeSettings />;
       case "preferences":
-        return <div>Préférences à venir</div>;
+        return <PreferencesSettings />;
       case "security":
         return <div>Paramètres de sécurité à venir</div>;
       case "notifications":
