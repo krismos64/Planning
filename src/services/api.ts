@@ -150,6 +150,42 @@ export const api = {
         );
       return response.json();
     },
+
+    getWorkloadData: async () => {
+      const response = await fetch(`${API_URL}/stats/workload`);
+      if (!response.ok)
+        throw new Error(
+          "Erreur lors de la récupération des données de charge de travail"
+        );
+      return response.json();
+    },
+
+    getEmployeeDistribution: async () => {
+      const response = await fetch(`${API_URL}/stats/distribution`);
+      if (!response.ok)
+        throw new Error(
+          "Erreur lors de la récupération de la distribution des employés"
+        );
+      return response.json();
+    },
+
+    getVacationTrends: async () => {
+      const response = await fetch(`${API_URL}/stats/vacations`);
+      if (!response.ok)
+        throw new Error(
+          "Erreur lors de la récupération des tendances de congés"
+        );
+      return response.json();
+    },
+
+    getOvertimeData: async () => {
+      const response = await fetch(`${API_URL}/stats/overtime`);
+      if (!response.ok)
+        throw new Error(
+          "Erreur lors de la récupération des heures supplémentaires"
+        );
+      return response.json();
+    },
   },
 
   vacations: {
