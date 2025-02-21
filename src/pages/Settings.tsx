@@ -3,6 +3,7 @@ import CompanySettings from "../components/settings/CompanySettings";
 import EmployeeSettings from "../components/settings/EmployeeSettings";
 import PreferencesSettings from "../components/settings/PreferencesSettings";
 import SecuritySettings from "../components/settings/SecuritySettings";
+import NotificationSettings from "../components/settings/NotificationSettings";
 
 type SettingsTab =
   | "company"
@@ -33,7 +34,7 @@ const Settings = () => {
       case "security":
         return <SecuritySettings />;
       case "notifications":
-        return <div>Configuration des notifications à venir</div>;
+        return <NotificationSettings />;
       default:
         return null;
     }
