@@ -1,13 +1,20 @@
 import { useState } from "react";
 import CompanySettings from "../components/settings/CompanySettings";
+import EmployeeSettings from "../components/settings/EmployeeSettings";
 
-type SettingsTab = "company" | "preferences" | "security" | "notifications";
+type SettingsTab =
+  | "company"
+  | "employees"
+  | "preferences"
+  | "security"
+  | "notifications";
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState<SettingsTab>("company");
 
   const tabs = [
     { id: "company" as SettingsTab, label: "Entreprise" },
+    { id: "employees" as SettingsTab, label: "Employés" },
     { id: "preferences" as SettingsTab, label: "Préférences" },
     { id: "security" as SettingsTab, label: "Sécurité" },
     { id: "notifications" as SettingsTab, label: "Notifications" },
@@ -17,6 +24,8 @@ const Settings = () => {
     switch (activeTab) {
       case "company":
         return <CompanySettings />;
+      case "employees":
+        return <EmployeeSettings />;
       case "preferences":
         return <div>Préférences à venir</div>;
       case "security":

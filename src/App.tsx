@@ -15,36 +15,39 @@ import Vacations from "./pages/Vacations";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import { ThemeProvider } from "./context/ThemeContext";
 import Settings from "./pages/Settings";
+import { CompanyProvider } from "./context/CompanyContext";
 
 const App = () => {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <ThemeProvider>
-          <Router>
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route
-                element={
-                  <PrivateRoute>
-                    <Layout />
-                  </PrivateRoute>
-                }
-              >
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/employees" element={<Employees />} />
-                <Route path="/planning" element={<Planning />} />
-                <Route path="/vacations" element={<Vacations />} />
-                <Route path="/settings" element={<Settings />} />
-              </Route>
-            </Routes>
-          </Router>
-        </ThemeProvider>
+        <CompanyProvider>
+          <ThemeProvider>
+            <Router>
+              <Routes>
+                <Route path="/" element={<Landing />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route
+                  element={
+                    <PrivateRoute>
+                      <Layout />
+                    </PrivateRoute>
+                  }
+                >
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/employees" element={<Employees />} />
+                  <Route path="/planning" element={<Planning />} />
+                  <Route path="/vacations" element={<Vacations />} />
+                  <Route path="/settings" element={<Settings />} />
+                </Route>
+              </Routes>
+            </Router>
+          </ThemeProvider>
+        </CompanyProvider>
       </AuthProvider>
     </ErrorBoundary>
   );

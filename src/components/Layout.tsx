@@ -2,13 +2,26 @@ import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import { useAuth } from "../context/AuthContext";
+import { useCompany } from "../context/CompanyContext";
 
 const Layout = () => {
   const { user } = useAuth();
+  const { companyLogo, companyName } = useCompany();
 
   return (
     <div className="min-h-screen flex">
       <div className="flex flex-col w-64 bg-gray-800">
+        <div className="p-4">
+          {companyLogo ? (
+            <img
+              src={companyLogo}
+              alt={companyName}
+              className="h-12 w-auto mb-4"
+            />
+          ) : (
+            <h1 className="text-xl font-bold text-white mb-4">{companyName}</h1>
+          )}
+        </div>
         <div className="flex-1">
           <Sidebar />
         </div>
