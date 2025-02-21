@@ -1,4 +1,5 @@
 import { config } from "../config";
+import { Employee, VacationRequest } from "../types";
 
 const API_URL = config.apiUrl;
 
@@ -49,20 +50,44 @@ export const api = {
   },
 
   planning: {
-    getWeeklyPlanning: async (weekStart: Date) => {
+    get: async (params: {
+      startDate: Date;
+      endDate: Date;
+      type: "jour" | "semaine" | "mois" | "année";
+      employeeId?: string;
+    }) => {
+      const queryParams = new URLSearchParams({
+        startDate: params.startDate.toISOString(),
+        endDate: params.endDate.toISOString(),
+        type: params.type,
+        ...(params.employeeId && { employeeId: params.employeeId }),
+      });
+
       const response = await fetch(
-        `${API_URL}/planning?weekStart=${weekStart.toISOString()}`
+        `${API_URL}/planning?${queryParams.toString()}`
       );
       if (!response.ok)
         throw new Error("Erreur lors de la récupération du planning");
       return response.json();
     },
 
+    getWeeklyPlanning: async (weekStart: Date) => {
+      const response = await fetch(
+        `${API_URL}/planning/weekly?weekStart=${weekStart.toISOString()}`
+      );
+      if (!response.ok)
+        throw new Error(
+          "Erreur lors de la récupération du planning hebdomadaire"
+        );
+      return response.json();
+    },
+
     createShift: async (data: {
-      date: Date;
       employeeId: string;
+      date: Date;
       startTime: string;
       endTime: string;
+      type: "normal" | "congé" | "formation" | "absence";
     }) => {
       const response = await fetch(`${API_URL}/planning/shifts`, {
         method: "POST",
@@ -81,6 +106,30 @@ export const api = {
       });
       if (!response.ok)
         throw new Error("Erreur lors de la suppression du shift");
+      return response.json();
+    },
+
+    optimize: async (params: {
+      startDate: Date;
+      endDate: Date;
+      employees: Employee[];
+      constraints: {
+        minEmployeesPerShift: number;
+        maxHoursPerWeek: number;
+        preferredShifts: Map<string, string[]>;
+        unavailableDays: Map<string, Date[]>;
+      };
+      vacations: VacationRequest[];
+    }) => {
+      const response = await fetch(`${API_URL}/planning/optimize`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(params),
+      });
+      if (!response.ok)
+        throw new Error("Erreur lors de l'optimisation du planning");
       return response.json();
     },
   },

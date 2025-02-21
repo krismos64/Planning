@@ -14,6 +14,7 @@ import Planning from "./pages/Planning";
 import Vacations from "./pages/Vacations";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import { ThemeProvider } from "./context/ThemeContext";
+import Settings from "./pages/Settings";
 
 const App = () => {
   return (
@@ -39,6 +40,7 @@ const App = () => {
                 <Route path="/employees" element={<Employees />} />
                 <Route path="/planning" element={<Planning />} />
                 <Route path="/vacations" element={<Vacations />} />
+                <Route path="/settings" element={<Settings />} />
               </Route>
             </Routes>
           </Router>

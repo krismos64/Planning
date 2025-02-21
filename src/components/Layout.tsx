@@ -1,32 +1,34 @@
 import { Outlet } from "react-router-dom";
-import Sidebar from "./Sidebar";
 import Header from "./Header";
-import { ComponentProps } from "../types";
+import Sidebar from "./Sidebar";
+import { useAuth } from "../context/AuthContext";
 
-const Layout = (props: ComponentProps) => {
+const Layout = () => {
+  const { user } = useAuth();
+
   return (
-    <div className="flex h-screen w-full overflow-hidden">
-      {/* Sidebar fixe */}
-      <div className="w-64 h-full bg-gray-800 flex-shrink-0">
-        <Sidebar />
+    <div className="min-h-screen flex">
+      <div className="flex flex-col w-64 bg-gray-800">
+        <div className="flex-1">
+          <Sidebar />
+        </div>
+
+        {/* Section utilisateur */}
+        <div className="p-4 border-t border-gray-700">
+          <div className="mb-4">
+            <p className="text-sm text-gray-400">Connecté en tant que</p>
+            <p className="text-white font-medium truncate">
+              {user?.name || "Admin"}
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* Contenu principal */}
-      <div className="flex flex-col flex-1 h-full overflow-hidden">
-        {/* Header fixe */}
+      <div className="flex-1 flex flex-col">
         <Header />
-
-        {/* Zone de contenu principale avec scroll */}
-        <main className="flex-1 overflow-y-auto bg-gray-100 p-6">
-          <div className="container mx-auto">
-            <Outlet />
-          </div>
+        <main className="flex-1 bg-gray-100 p-6">
+          <Outlet />
         </main>
-
-        {/* Footer optionnel */}
-        <footer className="mt-auto py-4 text-center text-gray-600 text-sm">
-          <p>© 2024 SmartPlanning AI - Tous droits réservés</p>
-        </footer>
       </div>
     </div>
   );
