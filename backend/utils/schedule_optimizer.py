@@ -1,3 +1,5 @@
+import sys
+import json
 from ortools.sat.python import cp_model
 
 def optimize_schedule(employees, shifts, requirements):
@@ -24,9 +26,16 @@ def optimize_schedule(employees, shifts, requirements):
     status = solver.Solve(model)
 
     if status == cp_model.OPTIMAL:
-        return {(e, s): solver.Value(schedule[(e, s)]) for e in employees for s in shifts}
+        return {"status": "success", "schedule": {(e, s): solver.Value(schedule[(e, s)]) for e in employees for s in shifts}}
     else:
-        return None
+        return {"status": "failure", "schedule": None}
+
+if __name__ == "__main__":
+    employees = json.loads(sys.argv[1])
+    shifts = json.loads(sys.argv[2])
+    requirements = json.loads(sys.argv[3])
+    result = optimize_schedule(employees, shifts, requirements)
+    print(json.dumps(result))
 
 # Exemple d'utilisation
 employees = {

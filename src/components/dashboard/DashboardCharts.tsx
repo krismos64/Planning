@@ -17,26 +17,14 @@ import {
 import { useTheme } from "../../context/ThemeContext";
 
 interface DashboardChartsProps {
-  workloadData: {
+  workloadData: Array<{
     date: string;
     plannedHours: number;
     actualHours: number;
-  }[];
-  employeeDistributionData: {
-    role: string;
-    count: number;
-  }[];
-  vacationTrendData: {
-    month: string;
-    requests: number;
-    approved: number;
-    rejected: number;
-  }[];
-  overtimeData: {
-    department: string;
-    hours: number;
-    cost: number;
-  }[];
+  }>;
+  employeeDistributionData: Array<{ role: string; count: number }>;
+  vacationTrendData: Array<{ month: string; requests: number }>;
+  overtimeData: Array<{ department: string; overtimeHours: number }>;
 }
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AF19FF"];
@@ -165,8 +153,6 @@ const DashboardCharts = ({
               />
               <Legend />
               <Bar dataKey="requests" fill="#8884d8" name="Demandes" />
-              <Bar dataKey="approved" fill="#82ca9d" name="Approuvées" />
-              <Bar dataKey="rejected" fill="#ff8042" name="Rejetées" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -202,16 +188,9 @@ const DashboardCharts = ({
               <Line
                 yAxisId="left"
                 type="monotone"
-                dataKey="hours"
+                dataKey="overtimeHours"
                 name="Heures"
                 stroke="#8884d8"
-              />
-              <Line
-                yAxisId="right"
-                type="monotone"
-                dataKey="cost"
-                name="Coût"
-                stroke="#82ca9d"
               />
             </LineChart>
           </ResponsiveContainer>

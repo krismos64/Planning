@@ -20,4 +20,10 @@ router.post("/login", (req, res) => {
   }
 });
 
+router.post("/register", (req, res) => {
+  const { username, email, password } = req.body;
+  // Logique pour enregistrer l'utilisateur dans la base de données
+  res.status(201).json({ message: "Utilisateur enregistré avec succès" });
+});
+
 module.exports = router;

@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const Employee = require("../models/Employee");
-const Planning = require("../models/Planning");
-const VacationRequest = require("../models/VacationRequest");
+const Employee = require("../models/Employee.js");
+const Planning = require("../models/Planning.js");
+const VacationRequest = require("../models/VacationRequest.js");
 
 router.get("/dashboard", async (req, res) => {
   try {

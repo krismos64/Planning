@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Planning = require("../models/Planning");
-const { optimizeSchedule } = require("../utils/schedule_optimizer");
+const { optimizeSchedule } = require("../utils/schedule_optimizer.js");
 
 router.get("/", async (req, res) => {
   try {

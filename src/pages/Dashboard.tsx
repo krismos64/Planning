@@ -43,6 +43,10 @@ const Dashboard = () => {
     return <div>Chargement...</div>;
   }
 
+  const mappedOvertimeData = data.overtimeData.map((item) => ({
+    department: item.department,
+    overtimeHours: item.hours,
+  }));
   return (
     <div className="space-y-8">
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -56,7 +60,7 @@ const Dashboard = () => {
         workloadData={data.workloadData}
         employeeDistributionData={data.employeeDistributionData}
         vacationTrendData={data.vacationTrendData}
-        overtimeData={data.overtimeData}
+        overtimeData={mappedOvertimeData}
       />
 
       {notification && (
