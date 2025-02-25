@@ -48,11 +48,17 @@ const DashboardCharts = ({
 }: DashboardChartsProps) => {
   const { isDarkMode } = useTheme();
 
+  const chartTheme = {
+    background: isDarkMode ? "#0a0f1a" : "#fff",
+    textColor: isDarkMode ? "#fff" : "#000",
+    gridColor: isDarkMode ? "#374151" : "#eee",
+  };
+
   return (
     <div className="space-y-8">
       {/* Graphique de charge de travail */}
-      <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold mb-4 dark:text-white">
+      <div className="bg-white dark:bg-dark-800 p-4 md:p-6 rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold mb-4 dark:text-gray-100">
           Charge de travail hebdomadaire
         </h3>
         <div className="h-[300px] md:h-[400px]">
@@ -61,16 +67,17 @@ const DashboardCharts = ({
               data={workloadData}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="date"
-                tick={{ fill: isDarkMode ? "#fff" : "#000" }}
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={chartTheme.gridColor}
               />
-              <YAxis tick={{ fill: isDarkMode ? "#fff" : "#000" }} />
+              <XAxis dataKey="date" stroke={chartTheme.textColor} />
+              <YAxis stroke={chartTheme.textColor} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: isDarkMode ? "#374151" : "#fff",
+                  backgroundColor: chartTheme.background,
                   borderColor: isDarkMode ? "#4b5563" : "#ddd",
+                  color: chartTheme.textColor,
                 }}
               />
               <Legend />
@@ -92,8 +99,8 @@ const DashboardCharts = ({
       </div>
 
       {/* Distribution des employés */}
-      <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold mb-4 dark:text-white">
+      <div className="bg-white dark:bg-dark-800 p-4 md:p-6 rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold mb-4 dark:text-gray-100">
           Distribution des employés par rôle
         </h3>
         <div className="h-[300px] md:h-[400px]">
@@ -120,8 +127,9 @@ const DashboardCharts = ({
               </Pie>
               <Tooltip
                 contentStyle={{
-                  backgroundColor: isDarkMode ? "#374151" : "#fff",
+                  backgroundColor: chartTheme.background,
                   borderColor: isDarkMode ? "#4b5563" : "#ddd",
+                  color: chartTheme.textColor,
                 }}
               />
               <Legend />
@@ -131,23 +139,21 @@ const DashboardCharts = ({
       </div>
 
       {/* Tendance des congés */}
-      <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold mb-4 dark:text-white">
+      <div className="bg-white dark:bg-dark-800 p-4 md:p-6 rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold mb-4 dark:text-gray-100">
           Tendance des demandes de congés
         </h3>
         <div className="h-[300px] md:h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={vacationTrendData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="month"
-                tick={{ fill: isDarkMode ? "#fff" : "#000" }}
-              />
-              <YAxis tick={{ fill: isDarkMode ? "#fff" : "#000" }} />
+              <XAxis dataKey="month" tick={{ fill: chartTheme.textColor }} />
+              <YAxis tick={{ fill: chartTheme.textColor }} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: isDarkMode ? "#374151" : "#fff",
+                  backgroundColor: chartTheme.background,
                   borderColor: isDarkMode ? "#4b5563" : "#ddd",
+                  color: chartTheme.textColor,
                 }}
               />
               <Legend />
@@ -160,8 +166,8 @@ const DashboardCharts = ({
       </div>
 
       {/* Heures supplémentaires */}
-      <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold mb-4 dark:text-white">
+      <div className="bg-white dark:bg-dark-800 p-4 md:p-6 rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold mb-4 dark:text-gray-100">
           Heures supplémentaires par département
         </h3>
         <div className="h-[300px] md:h-[400px]">
@@ -170,21 +176,19 @@ const DashboardCharts = ({
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey="department"
-                tick={{ fill: isDarkMode ? "#fff" : "#000" }}
+                tick={{ fill: chartTheme.textColor }}
               />
-              <YAxis
-                yAxisId="left"
-                tick={{ fill: isDarkMode ? "#fff" : "#000" }}
-              />
+              <YAxis yAxisId="left" tick={{ fill: chartTheme.textColor }} />
               <YAxis
                 yAxisId="right"
                 orientation="right"
-                tick={{ fill: isDarkMode ? "#fff" : "#000" }}
+                tick={{ fill: chartTheme.textColor }}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: isDarkMode ? "#374151" : "#fff",
+                  backgroundColor: chartTheme.background,
                   borderColor: isDarkMode ? "#4b5563" : "#ddd",
+                  color: chartTheme.textColor,
                 }}
               />
               <Legend />

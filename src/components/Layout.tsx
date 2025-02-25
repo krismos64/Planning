@@ -54,7 +54,7 @@ const Layout = () => {
               </h1>
             )}
           </div>
-          <Sidebar onItemClick={() => setIsSidebarOpen(false)} />
+          <Sidebar />
         </div>
 
         {/* Section utilisateur */}
