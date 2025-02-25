@@ -1,21 +1,42 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
-  darkMode: "class", // Utilisez 'class' pour activer le mode sombre via une classe CSS
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
-        dark: {
-          50: "#f9fafb",
-          100: "#f3f4f6",
-          200: "#e5e7eb",
-          300: "#d1d5db",
-          400: "#9ca3af",
-          500: "#6b7280",
-          600: "#4b5563",
-          700: "#374151",
-          800: "#1f2937",
-          900: "#0a0f1a", // Plus sombre
+        // Mode clair
+        light: {
+          50: "#FFFFFF", // Fond principal
+          100: "#F3F4F6", // Fond secondaire
+          200: "#E5E7EB", // Bordures
+          300: "#D1D5DB", // Bordures secondaires
+          400: "#9CA3AF", // Texte secondaire
+          500: "#4B5563", // Texte secondaire
+          600: "#1F2937", // Texte principal
         },
+        // Mode sombre
+        dark: {
+          50: "#0A0F1A", // Fond principal
+          100: "#1F2937", // Fond secondaire
+          200: "#374151", // Bordures
+          300: "#4B5563", // Bordures secondaires
+          400: "#9CA3AF", // Texte secondaire
+          500: "#F3F4F6", // Texte principal
+        },
+        // Accents
+        primary: {
+          DEFAULT: "#4F46E5", // Couleur principale
+          light: "#6366F1", // Couleur secondaire
+          dark: "#4338CA", // Couleur sombre
+        },
+        // États spécifiques
+        success: "#10B981",
+        error: "#EF4444",
+        warning: "#F59E0B",
+        info: "#3B82F6",
+      },
+      fontFamily: {
+        sans: ['"Inter"', "sans-serif"], // Police moderne et lisible
       },
     },
   },

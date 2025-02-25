@@ -9,7 +9,7 @@ const Sidebar = ({ onItemClick }: SidebarProps) => {
   const location = useLocation();
 
   return (
-    <aside className="w-64 bg-dark-800 text-white h-full">
+    <aside className="w-64 bg-light-100 dark:bg-dark-100 text-light-600 dark:text-dark-400 h-full">
       <div className="p-6">
         <div className="mb-8">
           <h1 className="text-2xl font-bold">SmartPlanning AI</h1>
@@ -30,8 +30,8 @@ const Sidebar = ({ onItemClick }: SidebarProps) => {
               className={({ isActive }) =>
                 `flex items-center px-4 py-2 text-sm font-medium ${
                   isActive
-                    ? "bg-dark-700 text-white"
-                    : "text-gray-300 hover:bg-dark-600 hover:text-white"
+                    ? "bg-primary-DEFAULT text-white"
+                    : "text-gray-300 hover:bg-primary-light hover:text-white"
                 }`
               }
             >

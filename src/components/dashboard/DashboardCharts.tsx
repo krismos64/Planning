@@ -12,6 +12,7 @@ import {
   Legend,
   ResponsiveContainer,
   Cell,
+  Brush,
 } from "recharts";
 import { useTheme } from "../../context/ThemeContext";
 
@@ -49,16 +50,16 @@ const DashboardCharts = ({
   const { isDarkMode } = useTheme();
 
   const chartTheme = {
-    background: isDarkMode ? "#0a0f1a" : "#fff",
-    textColor: isDarkMode ? "#fff" : "#000",
-    gridColor: isDarkMode ? "#374151" : "#eee",
+    background: isDarkMode ? "#0a0f1a" : "#ffffff",
+    textColor: isDarkMode ? "#f3f4f6" : "#1f2937",
+    gridColor: isDarkMode ? "#374151" : "#e0e0e0",
   };
 
   return (
     <div className="space-y-8">
       {/* Graphique de charge de travail */}
-      <div className="bg-white dark:bg-dark-800 p-4 md:p-6 rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold mb-4 dark:text-gray-100">
+      <div className="bg-light-50 dark:bg-dark-50 p-4 md:p-6 rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold mb-4 text-light-600 dark:text-dark-500">
           Charge de travail hebdomadaire
         </h3>
         <div className="h-[300px] md:h-[400px]">
@@ -76,31 +77,37 @@ const DashboardCharts = ({
               <Tooltip
                 contentStyle={{
                   backgroundColor: chartTheme.background,
-                  borderColor: isDarkMode ? "#4b5563" : "#ddd",
+                  borderColor: "#ddd",
                   color: chartTheme.textColor,
                 }}
               />
-              <Legend />
+              <Legend
+                wrapperStyle={{ color: chartTheme.textColor }}
+                onClick={(data) => {
+                  // Logique pour filtrer les données selon la légende cliquée
+                }}
+              />
               <Line
                 type="monotone"
                 dataKey="plannedHours"
-                stroke="#8884d8"
+                stroke="#4F46E5"
                 name="Heures planifiées"
               />
               <Line
                 type="monotone"
                 dataKey="actualHours"
-                stroke="#82ca9d"
+                stroke="#10B981"
                 name="Heures réelles"
               />
+              <Brush dataKey="date" height={30} stroke="#4F46E5" />
             </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
 
       {/* Distribution des employés */}
-      <div className="bg-white dark:bg-dark-800 p-4 md:p-6 rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold mb-4 dark:text-gray-100">
+      <div className="bg-dark-800 p-4 md:p-6 rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold mb-4 text-text-light">
           Distribution des employés par rôle
         </h3>
         <div className="h-[300px] md:h-[400px]">
@@ -128,7 +135,7 @@ const DashboardCharts = ({
               <Tooltip
                 contentStyle={{
                   backgroundColor: chartTheme.background,
-                  borderColor: isDarkMode ? "#4b5563" : "#ddd",
+                  borderColor: "#ddd",
                   color: chartTheme.textColor,
                 }}
               />
@@ -139,8 +146,8 @@ const DashboardCharts = ({
       </div>
 
       {/* Tendance des congés */}
-      <div className="bg-white dark:bg-dark-800 p-4 md:p-6 rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold mb-4 dark:text-gray-100">
+      <div className="bg-dark-800 p-4 md:p-6 rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold mb-4 text-text-light">
           Tendance des demandes de congés
         </h3>
         <div className="h-[300px] md:h-[400px]">
@@ -152,7 +159,7 @@ const DashboardCharts = ({
               <Tooltip
                 contentStyle={{
                   backgroundColor: chartTheme.background,
-                  borderColor: isDarkMode ? "#4b5563" : "#ddd",
+                  borderColor: "#ddd",
                   color: chartTheme.textColor,
                 }}
               />
@@ -166,8 +173,8 @@ const DashboardCharts = ({
       </div>
 
       {/* Heures supplémentaires */}
-      <div className="bg-white dark:bg-dark-800 p-4 md:p-6 rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold mb-4 dark:text-gray-100">
+      <div className="bg-dark-800 p-4 md:p-6 rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold mb-4 text-text-light">
           Heures supplémentaires par département
         </h3>
         <div className="h-[300px] md:h-[400px]">
@@ -187,7 +194,7 @@ const DashboardCharts = ({
               <Tooltip
                 contentStyle={{
                   backgroundColor: chartTheme.background,
-                  borderColor: isDarkMode ? "#4b5563" : "#ddd",
+                  borderColor: "#ddd",
                   color: chartTheme.textColor,
                 }}
               />
