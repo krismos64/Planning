@@ -93,29 +93,159 @@ SmartPlanning AI est une application de gestion de planning intelligente qui per
 
 ### Installation
 
+1. **Cloner le projet**
+
 ```bash
-# Cloner le dépôt
-git clone https://github.com/votre-utilisateur/smartplanning-ai.git
-
-# Accéder au répertoire
+git clone https://github.com/votre-username/smartplanning-ai.git
 cd smartplanning-ai
+```
 
-# Installer les dépendances
+2. **Installer les dépendances**
+
+```bash
 npm install
-# ou
-yarn install
+```
+
+3. **Configuration de l'environnement**
+   Copier le fichier `.env.example` en `.env` et configurer les variables :
+
+```bash
+cp .env.example .env
+```
+
+Variables d'environnement requises :
+
+```env
+NODE_ENV=development
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=votre_mot_de_passe
+DB_NAME=SmartPlanningAI
+PORT=5001
+FRONTEND_URL=http://localhost:5002
+```
+
+4. **Configuration de MySQL**
+
+a. Installation de MySQL (macOS) :
+
+```bash
+brew install mysql
+brew services start mysql
+```
+
+b. Installation de MySQL (Linux) :
+
+```bash
+sudo apt update
+sudo apt install mysql-server
+sudo systemctl start mysql
+```
+
+c. Sécuriser l'installation :
+
+```bash
+mysql_secure_installation
+```
+
+5. **Initialisation de la base de données**
+
+```bash
+cd backend
+node scripts/migrate.js
 ```
 
 ### Démarrage
 
+1. **Démarrer le serveur backend**
+
 ```bash
-# Démarrer le serveur de développement
-npm start
-# ou
-yarn start
+npm run server
 ```
 
-L'application sera accessible à l'adresse [http://localhost:3000](http://localhost:3000).
+2. **Démarrer le frontend**
+
+```bash
+npm run client
+```
+
+3. **Démarrer les deux en même temps**
+
+```bash
+npm run dev
+```
+
+## 📚 Structure de la base de données
+
+### Tables principales
+
+1. **users**
+
+   - Gestion des utilisateurs et authentification
+   - Rôles : admin, manager, employee
+
+2. **employees**
+
+   - Informations détaillées sur les employés
+   - Lié à la table users
+
+3. **plannings**
+
+   - Plannings généraux
+   - Peut contenir plusieurs événements
+
+4. **planning_events**
+
+   - Événements spécifiques dans les plannings
+   - Types : shift, meeting, training, other
+
+5. **vacation_requests**
+   - Demandes de congés
+   - Statuts : pending, approved, rejected
+
+## 🛠 Technologies utilisées
+
+- **Frontend**
+
+  - React
+  - Styled Components
+  - TailwindCSS
+  - React Router
+
+- **Backend**
+  - Node.js
+  - Express
+  - MySQL
+  - JWT pour l'authentification
+
+## 📝 Scripts disponibles
+
+- `npm run dev` : Démarre le frontend et le backend
+- `npm run client` : Démarre uniquement le frontend
+- `npm run server` : Démarre uniquement le backend
+- `npm run migrate` : Exécute les migrations de la base de données
+- `npm test` : Lance les tests
+- `npm run build` : Crée une version de production
+
+## 🔒 Sécurité
+
+- Authentification JWT
+- Hachage des mots de passe avec bcrypt
+- Protection CORS
+- Validation des entrées
+- Gestion des rôles et permissions
+
+## 🤝 Contribution
+
+1. Fork le projet
+2. Créer une branche (`git checkout -b feature/AmazingFeature`)
+3. Commit les changements (`git commit -m 'Add some AmazingFeature'`)
+4. Push vers la branche (`git push origin feature/AmazingFeature`)
+5. Ouvrir une Pull Request
+
+## 📄 Licence
+
+Distribué sous la licence MIT. Voir `LICENSE` pour plus d'informations.
 
 ## 📝 Bonnes pratiques d'utilisation
 

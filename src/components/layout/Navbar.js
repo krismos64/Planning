@@ -3,6 +3,10 @@ import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../components/ThemeProvider";
+import {
+  NotificationBell,
+  useRealTimeNotifications,
+} from "../ui/RealTimeNotification";
 
 // Composants stylisés
 const NavbarContainer = styled.nav`
@@ -159,6 +163,100 @@ const MobileNavLink = styled(NavLink)`
   display: block;
 `;
 
+const NotificationsPanel = styled.div`
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  width: 350px;
+  max-height: 500px;
+  overflow-y: auto;
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  box-shadow: ${({ theme }) => theme.shadows.large};
+  z-index: 1000;
+  padding: ${({ theme }) => theme.spacing.md};
+  display: ${({ isOpen }) => (isOpen ? "block" : "none")};
+`;
+
+const NotificationsPanelHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  padding-bottom: ${({ theme }) => theme.spacing.sm};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+`;
+
+const NotificationsPanelTitle = styled.h3`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: ${({ theme }) => theme.typography.sizes.md};
+`;
+
+const ClearButton = styled.button`
+  background: none;
+  border: none;
+  color: ${({ theme }) => theme.colors.primary};
+  font-size: ${({ theme }) => theme.typography.sizes.sm};
+  cursor: pointer;
+  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.sm}`};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: ${({ theme }) => `${theme.colors.primary}11`};
+  }
+`;
+
+const NotificationsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.sm};
+`;
+
+const NotificationItem = styled.div`
+  padding: ${({ theme }) => theme.spacing.sm};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  background-color: ${({ theme, read }) =>
+    read ? theme.colors.background : `${theme.colors.primary}11`};
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: ${({ theme }) => `${theme.colors.primary}22`};
+  }
+`;
+
+const NotificationHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+const NotificationTitle = styled.h4`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: ${({ theme }) => theme.typography.sizes.sm};
+`;
+
+const NotificationTime = styled.span`
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: ${({ theme }) => theme.typography.sizes.xs};
+`;
+
+const NotificationMessage = styled.p`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: ${({ theme }) => theme.typography.sizes.sm};
+`;
+
+const EmptyNotifications = styled.div`
+  text-align: center;
+  padding: ${({ theme }) => theme.spacing.lg};
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
 // Icônes
 const MenuIcon = () => (
   <svg
@@ -311,39 +409,50 @@ const MoonIcon = () => (
 
 // Composant Navbar
 const Navbar = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, logout } = useAuth();
-  const { isDarkMode, toggleTheme } = useTheme();
   const location = useLocation();
+  const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [notificationsPanelOpen, setNotificationsPanelOpen] = useState(false);
+  const { notifications, markAsRead, clearAll } = useRealTimeNotifications();
 
-  // Vérifier si un lien est actif
   const isActive = (path) => {
     return location.pathname === path;
   };
 
-  // Obtenir les initiales de l'utilisateur
   const getInitials = (name) => {
     if (!name) return "U";
     return name
       .split(" ")
-      .map((part) => part[0])
+      .map((n) => n[0])
       .join("")
       .toUpperCase();
   };
 
+  const handleNotificationClick = (id) => {
+    markAsRead(id);
+  };
+
+  const toggleNotificationsPanel = () => {
+    setNotificationsPanelOpen(!notificationsPanelOpen);
+  };
+
   return (
     <NavbarContainer>
-      <Logo to="/dashboard">SmartPlanning AI</Logo>
+      <Logo to="/dashboard">
+        <span>SmartPlanning</span>
+        <span style={{ color: "#4F46E5", marginLeft: "4px" }}>AI</span>
+      </Logo>
 
       <NavLinks>
         <NavLink to="/dashboard" active={isActive("/dashboard")}>
           Tableau de bord
         </NavLink>
-        <NavLink to="/planning" active={isActive("/planning")}>
-          Planning
-        </NavLink>
         <NavLink to="/employees" active={isActive("/employees")}>
           Employés
+        </NavLink>
+        <NavLink to="/planning" active={isActive("/planning")}>
+          Planning
         </NavLink>
         <NavLink to="/vacations" active={isActive("/vacations")}>
           Congés
@@ -351,57 +460,98 @@ const Navbar = () => {
         <NavLink to="/stats" active={isActive("/stats")}>
           Statistiques
         </NavLink>
-        {user?.role === "admin" && (
+        {user && user.role === "admin" && (
           <NavLink to="/users" active={isActive("/users")}>
-            Gestion des utilisateurs
+            Utilisateurs
           </NavLink>
         )}
       </NavLinks>
 
       <NavActions>
-        <ThemeToggle onClick={toggleTheme} aria-label="Changer de thème">
-          {isDarkMode ? <SunIcon /> : <MoonIcon />}
+        <div style={{ position: "relative" }}>
+          <div onClick={toggleNotificationsPanel}>
+            <NotificationBell />
+          </div>
+
+          <NotificationsPanel isOpen={notificationsPanelOpen}>
+            <NotificationsPanelHeader>
+              <NotificationsPanelTitle>Notifications</NotificationsPanelTitle>
+              <ClearButton onClick={clearAll}>Tout effacer</ClearButton>
+            </NotificationsPanelHeader>
+
+            <NotificationsList>
+              {notifications.length === 0 ? (
+                <EmptyNotifications>
+                  Aucune notification pour le moment
+                </EmptyNotifications>
+              ) : (
+                notifications.map((notification) => (
+                  <NotificationItem
+                    key={notification.id}
+                    read={notification.read}
+                    onClick={() => handleNotificationClick(notification.id)}
+                  >
+                    <NotificationHeader>
+                      <NotificationTitle>
+                        {notification.title}
+                      </NotificationTitle>
+                      <NotificationTime>
+                        {new Date(notification.timestamp).toLocaleTimeString(
+                          [],
+                          { hour: "2-digit", minute: "2-digit" }
+                        )}
+                      </NotificationTime>
+                    </NotificationHeader>
+                    <NotificationMessage>
+                      {notification.message}
+                    </NotificationMessage>
+                  </NotificationItem>
+                ))
+              )}
+            </NotificationsList>
+          </NotificationsPanel>
+        </div>
+
+        <ThemeToggle onClick={toggleTheme}>
+          {theme === "light" ? <MoonIcon /> : <SunIcon />}
         </ThemeToggle>
 
-        <UserProfile onClick={() => {}}>
+        <UserProfile>
           <div className="avatar">{getInitials(user?.name)}</div>
           <div className="user-info">
-            <div className="name">{user?.name}</div>
-            <div className="role">{user?.role}</div>
+            <div className="name">{user?.name || "Utilisateur"}</div>
+            <div className="role">
+              {user?.role === "admin" ? "Administrateur" : "Utilisateur"}
+            </div>
           </div>
         </UserProfile>
 
-        <MobileMenuButton
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          {isMobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
+        <MobileMenuButton onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+          {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
         </MobileMenuButton>
       </NavActions>
 
-      <MobileMenu isOpen={isMobileMenuOpen}>
-        <MobileNavLink to="/dashboard" active={isActive("/dashboard")}>
+      <MobileMenu isOpen={mobileMenuOpen}>
+        <NavLink to="/dashboard" active={isActive("/dashboard")}>
           Tableau de bord
-        </MobileNavLink>
-        <MobileNavLink to="/planning" active={isActive("/planning")}>
-          Planning
-        </MobileNavLink>
-        <MobileNavLink to="/employees" active={isActive("/employees")}>
+        </NavLink>
+        <NavLink to="/employees" active={isActive("/employees")}>
           Employés
-        </MobileNavLink>
-        <MobileNavLink to="/vacations" active={isActive("/vacations")}>
+        </NavLink>
+        <NavLink to="/planning" active={isActive("/planning")}>
+          Planning
+        </NavLink>
+        <NavLink to="/vacations" active={isActive("/vacations")}>
           Congés
-        </MobileNavLink>
-        <MobileNavLink to="/stats" active={isActive("/stats")}>
+        </NavLink>
+        <NavLink to="/stats" active={isActive("/stats")}>
           Statistiques
-        </MobileNavLink>
-        {user?.role === "admin" && (
-          <MobileNavLink to="/users" active={isActive("/users")}>
-            Gestion des utilisateurs
-          </MobileNavLink>
+        </NavLink>
+        {user && user.role === "admin" && (
+          <NavLink to="/users" active={isActive("/users")}>
+            Utilisateurs
+          </NavLink>
         )}
-        <MobileNavLink as="button" onClick={logout}>
-          Déconnexion
-        </MobileNavLink>
       </MobileMenu>
     </NavbarContainer>
   );

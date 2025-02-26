@@ -7,6 +7,7 @@ import {
 import ThemeProvider from "./components/ThemeProvider";
 import { NotificationProvider } from "./components/ui/Notification";
 import { AuthProvider } from "./contexts/AuthContext";
+import RealTimeNotificationProvider from "./components/ui/RealTimeNotification";
 
 // Layouts
 import MainLayout from "./layouts/MainLayout";
@@ -69,46 +70,48 @@ const App = () => {
       <ThemeProvider>
         <NotificationProvider>
           <AuthProvider>
-            <Routes>
-              {/* Landing Page */}
-              <Route path="/" element={<LandingPage />} />
+            <RealTimeNotificationProvider>
+              <Routes>
+                {/* Landing Page */}
+                <Route path="/" element={<LandingPage />} />
 
-              {/* Routes d'authentification */}
-              <Route element={<AuthLayout />}>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-              </Route>
+                {/* Routes d'authentification */}
+                <Route element={<AuthLayout />}>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                </Route>
 
-              {/* Routes protégées */}
-              <Route
-                element={
-                  <ProtectedRoute>
-                    <MainLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/employees" element={<Employees />} />
-                <Route path="/planning" element={<Planning />} />
-                <Route path="/vacations" element={<Vacations />} />
-                <Route path="/stats" element={<Stats />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/profile" element={<Profile />} />
-
-                {/* Routes Admin */}
+                {/* Routes protégées */}
                 <Route
-                  path="/users"
                   element={
-                    <AdminRoute>
-                      <UserManagement />
-                    </AdminRoute>
+                    <ProtectedRoute>
+                      <MainLayout />
+                    </ProtectedRoute>
                   }
-                />
-              </Route>
+                >
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/employees" element={<Employees />} />
+                  <Route path="/planning" element={<Planning />} />
+                  <Route path="/vacations" element={<Vacations />} />
+                  <Route path="/stats" element={<Stats />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/profile" element={<Profile />} />
 
-              {/* Page 404 */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+                  {/* Routes Admin */}
+                  <Route
+                    path="/users"
+                    element={
+                      <AdminRoute>
+                        <UserManagement />
+                      </AdminRoute>
+                    }
+                  />
+                </Route>
+
+                {/* Page 404 */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </RealTimeNotificationProvider>
           </AuthProvider>
         </NotificationProvider>
       </ThemeProvider>

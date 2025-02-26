@@ -243,8 +243,8 @@ const NotificationItem = styled.div`
 
   ${({ type }) => notificationTypes[type] || notificationTypes.info}
 
-  animation: ${({ isClosing }) =>
-    isClosing ? slideOut : slideIn} 0.3s ease-in-out;
+  animation: ${({ $isClosing }) =>
+    $isClosing ? slideOut : slideIn} 0.3s ease-in-out;
 `;
 
 const IconContainer = styled.div`
@@ -294,7 +294,7 @@ const ProgressBar = styled.div`
   left: 0;
   height: 3px;
   background-color: rgba(255, 255, 255, 0.3);
-  animation: ${progressAnimation} ${({ duration }) => `${duration}ms`} linear;
+  animation: ${progressAnimation} ${({ $duration }) => `${$duration}ms`} linear;
 `;
 
 // Contexte pour les notifications
@@ -356,7 +356,7 @@ const NotificationComponent = ({
   };
 
   return (
-    <NotificationItem type={type} isClosing={isClosing}>
+    <NotificationItem type={type} $isClosing={isClosing}>
       <IconContainer>{renderIcon()}</IconContainer>
       <ContentContainer>
         {title && <Title>{title}</Title>}
@@ -366,7 +366,7 @@ const NotificationComponent = ({
         <CloseIcon />
       </CloseButton>
       {duration !== Infinity && (
-        <ProgressBar className="notification-progress" duration={duration} />
+        <ProgressBar className="notification-progress" $duration={duration} />
       )}
     </NotificationItem>
   );

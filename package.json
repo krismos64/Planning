@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "start": "react-scripts start",
+    "start:all": "./start.sh",
+    "start:backend": "node backend/server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -44,6 +46,7 @@
       "react-app/jest"
     ]
   },
+  "proxy": "http://localhost:5001",
   "browserslist": {
     "production": [
       ">0.2%",

@@ -188,8 +188,8 @@ const Login = ({ onLogin }) => {
     setIsLoading(true);
 
     try {
-      // Simuler une requête API
-      const response = await fetch("http://localhost:5000/auth/login", {
+      // Corriger l'URL pour utiliser le préfixe /api
+      const response = await fetch("http://localhost:5001/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
