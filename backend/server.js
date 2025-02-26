@@ -3,56 +3,48 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
-const employeesRouter = require("./routes/employees.js");
-const planningRouter = require("./routes/planning");
-const statsRouter = require("./routes/stats");
-const vacationsRouter = require("./routes/vacations");
-const authMiddleware = require("./middleware/authMiddleware");
-const authRouter = require("./routes/auth");
+
+// Import des routes
+const authRoutes = require("./routes/auth");
+const employeesRoutes = require("./routes/employees");
+const planningRoutes = require("./routes/planning");
+const vacationsRoutes = require("./routes/vacations");
 
 const app = express();
 
 // Connecter à la base de données
 connectDB();
 
-// Configuration CORS plus permissive
+// Middleware
+app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:5002", // Autoriser les requêtes depuis ce domaine
+    origin: process.env.FRONTEND_URL || "http://localhost:5002",
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-// Important: Placer express.json() avant les routes
-app.use(express.json());
+// Routes API
+app.use("/api/employees", employeesRoutes);
+app.use("/api/planning", planningRoutes);
+app.use("/api/vacations", vacationsRoutes);
+app.use("/api/auth", authRoutes);
 
-// Routes publiques (sans authentification)
-app.use("/auth", authRouter);
-
-// Middleware d'authentification pour les routes protégées
-if (process.env.NODE_ENV === "development") {
-  app.use(["/employees", "/planning", "/stats", "/vacations"], authMiddleware);
-}
-
-// Routes protégées
-app.use("/employees", employeesRouter);
-app.use("/planning", planningRouter);
-app.use("/stats", statsRouter);
-app.use("/vacations", vacationsRouter);
-
-// Définir les Routes
-app.use("/api/users", require("./routes/users.js"));
-app.use("/api/employees", require("./routes/employees.js"));
-app.use("/api/projects", require("./routes/projects.js"));
-app.use("/api/tasks", require("./routes/tasks.js"));
-
-// Page d'accueil
+// Route de base
 app.get("/", (req, res) => {
-  res.send("Bienvenue sur l'API de SmartPlanning AI");
+  res.json({ message: "SmartPlanning AI API" });
 });
 
+// Gestion des erreurs
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    error: "Une erreur est survenue",
+    message: process.env.NODE_ENV === "development" ? err.message : undefined,
+  });
+});
+
+// Port dynamique
 const findAvailablePort = (startPort) => {
   return new Promise((resolve, reject) => {
     const server = require("http").createServer();
@@ -70,8 +62,16 @@ const findAvailablePort = (startPort) => {
 };
 
 const startServer = async () => {
-  const PORT = await findAvailablePort(process.env.PORT || 5000);
-  app.listen(PORT, () => console.log(`🚀 Serveur démarré sur le port ${PORT}`));
+  try {
+    const PORT = await findAvailablePort(process.env.PORT || 5000);
+    app.listen(PORT, () => {
+      console.log(`🚀 Serveur démarré sur le port ${PORT}`);
+      console.log(`📚 Documentation API: http://localhost:${PORT}/api-docs`);
+    });
+  } catch (error) {
+    console.error("Erreur lors du démarrage du serveur:", error);
+    process.exit(1);
+  }
 };
 
 startServer();

@@ -2,72 +2,99 @@
 const express = require("express");
 const router = express.Router();
 const Employee = require("../models/Employee");
+const { auth, checkRole } = require("../middleware/auth");
 
 // @route   GET /api/employees
 // @desc    Obtenir tous les employés
 // @access  Public
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
   try {
-    const employees = await Employee.findAll();
+    const employees = await Employee.find();
     res.json(employees);
-  } catch (err) {
-    console.error("Erreur lors de la récupération des employés:", err.message);
-    res.status(500).send("Erreur du serveur");
+  } catch (error) {
+    console.error("Erreur lors de la récupération des employés:", error);
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la récupération des employés" });
   }
 });
 
 // @route   GET /api/employees/:id
 // @desc    Obtenir un employé par ID
 // @access  Public
-router.get("/:id", async (req, res) => {
+router.get("/:id", auth, async (req, res) => {
   try {
     const employee = await Employee.findById(req.params.id);
     if (!employee) {
-      return res.status(404).json({ msg: "Employé non trouvé" });
+      return res.status(404).json({ message: "Employé non trouvé" });
     }
     res.json(employee);
-  } catch (err) {
-    console.error("Erreur lors de la récupération de l'employé:", err.message);
-    res.status(500).send("Erreur du serveur");
+  } catch (error) {
+    console.error(
+      `Erreur lors de la récupération de l'employé ${req.params.id}:`,
+      error
+    );
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la récupération de l'employé" });
   }
 });
 
 // @route   POST /api/employees
 // @desc    Créer un nouvel employé
 // @access  Public
-router.post("/", async (req, res) => {
+router.post("/", auth, checkRole(["admin", "manager"]), async (req, res) => {
   try {
-    const newEmployee = await Employee.create(req.body);
-    res.json(newEmployee);
-  } catch (err) {
-    console.error("Erreur lors de la création de l'employé:", err.message);
-    res.status(500).send("Erreur du serveur");
+    const employee = new Employee(req.body);
+    await employee.save();
+    res.status(201).json(employee);
+  } catch (error) {
+    console.error("Erreur lors de la création de l'employé:", error);
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la création de l'employé" });
   }
 });
 
 // @route   PUT /api/employees/:id
 // @desc    Mettre à jour un employé
 // @access  Public
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth, checkRole(["admin", "manager"]), async (req, res) => {
   try {
-    const updatedEmployee = await Employee.update(req.params.id, req.body);
-    res.json(updatedEmployee);
-  } catch (err) {
-    console.error("Erreur lors de la mise à jour de l'employé:", err.message);
-    res.status(500).send("Erreur du serveur");
+    const employee = await Employee.findByIdAndUpdate(req.params.id, req.body);
+    if (!employee) {
+      return res.status(404).json({ message: "Employé non trouvé" });
+    }
+    res.json(employee);
+  } catch (error) {
+    console.error(
+      `Erreur lors de la mise à jour de l'employé ${req.params.id}:`,
+      error
+    );
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la mise à jour de l'employé" });
   }
 });
 
 // @route   DELETE /api/employees/:id
 // @desc    Supprimer un employé
 // @access  Public
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, checkRole(["admin"]), async (req, res) => {
   try {
-    await Employee.delete(req.params.id);
-    res.json({ msg: "Employé supprimé avec succès" });
-  } catch (err) {
-    console.error("Erreur lors de la suppression de l'employé:", err.message);
-    res.status(500).send("Erreur du serveur");
+    const result = await Employee.delete(req.params.id);
+    if (!result) {
+      return res.status(404).json({ message: "Employé non trouvé" });
+    }
+    res.json({ message: "Employé supprimé avec succès" });
+  } catch (error) {
+    console.error(
+      `Erreur lors de la suppression de l'employé ${req.params.id}:`,
+      error
+    );
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la suppression de l'employé" });
   }
 });
 
