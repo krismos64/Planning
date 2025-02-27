@@ -7,7 +7,7 @@ import {
 import { lazy, Suspense } from "react";
 import ThemeProvider from "./components/ThemeProvider";
 import { NotificationProvider } from "./components/ui/Notification";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import RealTimeNotificationProvider from "./components/ui/RealTimeNotification";
 
 // Layouts
@@ -41,9 +41,6 @@ const LoadingFallback = () => (
     Chargement...
   </div>
 );
-
-// Auth Provider
-import { useAuth } from "./contexts/AuthContext";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {

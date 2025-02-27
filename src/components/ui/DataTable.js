@@ -417,11 +417,10 @@ const DataTable = ({
   emptyStateTitle = "Aucune donnée disponible",
   emptyStateMessage = "Il n'y a pas de données à afficher pour le moment.",
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState({});
 
   // Réinitialiser la page lorsque les données changent
   useEffect(() => {
@@ -455,20 +454,6 @@ const DataTable = ({
       });
     }
 
-    // Appliquer les filtres
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== "all") {
-        filteredData = filteredData.filter((item) => {
-          const column = columns.find((col) => col.id === key);
-          if (column) {
-            const itemValue = column.accessor(item);
-            return itemValue === value;
-          }
-          return true;
-        });
-      }
-    });
-
     // Trier les données
     if (sortConfig.key) {
       const column = columns.find((col) => col.id === sortConfig.key);
@@ -489,7 +474,7 @@ const DataTable = ({
     }
 
     return filteredData;
-  }, [data, columns, searchTerm, sortConfig, filters]);
+  }, [data, columns, searchTerm, sortConfig]);
 
   // Paginer les données
   const paginatedData = useMemo(() => {

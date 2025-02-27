@@ -10,7 +10,6 @@ import {
 import EmployeeForm from "../components/employees/EmployeeForm";
 import { useEmployees } from "../hooks/useEmployees";
 import { FormSelect } from "../components/ui/Form";
-import { useNotification } from "../components/ui/Notification";
 import {
   EMPLOYEE_TABLE_COLUMNS,
   EMPLOYEE_DEPARTMENTS,
@@ -32,7 +31,7 @@ const PageHeader = styled.div`
   @media (min-width: 768px) {
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+  justify-content: space-between;
   }
 `;
 
@@ -130,8 +129,6 @@ const Employees = () => {
     deleteEmployee,
     getEmployeesByStatus,
   } = useEmployees();
-
-  const { showNotification } = useNotification();
 
   // Filtrer les employés avec useMemo pour éviter les recalculs inutiles
   const filteredEmployees = useMemo(() => {
@@ -263,7 +260,7 @@ const Employees = () => {
             </option>
           ))}
         </FormSelect>
-        <FormSelect
+          <FormSelect
           label="Rôle"
           name="role"
           value={filters.role}
@@ -276,7 +273,7 @@ const Employees = () => {
             </option>
           ))}
         </FormSelect>
-        <FormSelect
+          <FormSelect
           label="Statut"
           name="status"
           value={filters.status}
@@ -293,18 +290,18 @@ const Employees = () => {
 
       <DataTable
         title={`Liste des employés (${filteredEmployees.length})`}
-        data={filteredEmployees}
+          data={filteredEmployees}
         columns={EMPLOYEE_TABLE_COLUMNS}
         loading={loading}
-        pagination={true}
+          pagination={true}
         pageSize={10}
         onRowClick={(employee) => {
           setEditingEmployee(employee);
           setShowModal(true);
         }}
-        emptyStateTitle="Aucun employé trouvé"
-        emptyStateMessage="Aucun employé ne correspond à vos critères de recherche."
-      />
+          emptyStateTitle="Aucun employé trouvé"
+          emptyStateMessage="Aucun employé ne correspond à vos critères de recherche."
+        />
 
       {showModal && (
         <Modal
