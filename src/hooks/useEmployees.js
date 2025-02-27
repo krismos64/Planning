@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNotification } from "../components/ui/Notification";
 
 export const useEmployees = () => {
@@ -131,7 +131,7 @@ export const useEmployees = () => {
     [fetchEmployees, showNotification]
   );
 
-  const getEmployeesByStatus = useCallback(() => {
+  const employeesByStatus = useMemo(() => {
     return {
       all: employees.length,
       active: employees.filter((e) => e.status === "active").length,
@@ -139,6 +139,11 @@ export const useEmployees = () => {
       inactive: employees.filter((e) => e.status === "inactive").length,
     };
   }, [employees]);
+
+  const getEmployeesByStatus = useCallback(
+    () => employeesByStatus,
+    [employeesByStatus]
+  );
 
   useEffect(() => {
     fetchEmployees();

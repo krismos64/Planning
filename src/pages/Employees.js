@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import styled from "styled-components";
 import {
   DataTable,
@@ -11,6 +11,12 @@ import EmployeeForm from "../components/employees/EmployeeForm";
 import { useEmployees } from "../hooks/useEmployees";
 import { FormSelect } from "../components/ui/Form";
 import { useNotification } from "../components/ui/Notification";
+import {
+  EMPLOYEE_TABLE_COLUMNS,
+  EMPLOYEE_DEPARTMENTS,
+  EMPLOYEE_ROLES,
+  EMPLOYEE_STATUSES,
+} from "../config/constants";
 
 // Composants stylisés
 const PageContainer = styled.div`
@@ -127,68 +133,61 @@ const Employees = () => {
 
   const { showNotification } = useNotification();
 
-  // Filtrer les employés
-  const filteredEmployees = employees.filter((employee) => {
-    if (activeTab !== "all" && employee.status !== activeTab) return false;
-    if (filters.department && employee.department !== filters.department)
-      return false;
-    if (filters.role && employee.role !== filters.role) return false;
-    if (filters.status && employee.status !== filters.status) return false;
-    return true;
-  });
+  // Filtrer les employés avec useMemo pour éviter les recalculs inutiles
+  const filteredEmployees = useMemo(() => {
+    return employees.filter((employee) => {
+      if (activeTab !== "all" && employee.status !== activeTab) return false;
+      if (filters.department && employee.department !== filters.department)
+        return false;
+      if (filters.role && employee.role !== filters.role) return false;
+      if (filters.status && employee.status !== filters.status) return false;
+      return true;
+    });
+  }, [employees, activeTab, filters]);
 
-  // Définir les colonnes pour le tableau
-  const columns = [
-    {
-      id: "name",
-      header: "Nom",
-      accessor: (employee) => `${employee.firstName} ${employee.lastName}`,
-      sortable: true,
-    },
-    {
-      id: "email",
-      header: "Email",
-      accessor: (employee) => employee.email,
-      sortable: true,
-    },
-    {
-      id: "department",
-      header: "Département",
-      accessor: (employee) => employee.department,
-      sortable: true,
-    },
-    {
-      id: "role",
-      header: "Rôle",
-      accessor: (employee) => employee.role,
-      sortable: true,
-    },
-    {
-      id: "status",
-      header: "Statut",
-      accessor: (employee) => employee.status,
-      sortable: true,
-      type: "status",
-    },
-    {
-      id: "startDate",
-      header: "Date d'embauche",
-      accessor: (employee) => employee.startDate,
-      sortable: true,
-      type: "date",
-    },
-  ];
+  const handleSubmit = useCallback(
+    async (data) => {
+      const success = editingEmployee
+        ? await updateEmployee(editingEmployee.id, data)
+        : await addEmployee(data);
 
-  const handleSubmit = async (data) => {
-    const success = editingEmployee
-      ? await updateEmployee(editingEmployee.id, data)
-      : await addEmployee(data);
+      if (success) {
+        setShowModal(false);
+        setEditingEmployee(null);
+      }
+    },
+    [editingEmployee, updateEmployee, addEmployee]
+  );
 
+  const handleDelete = useCallback(async () => {
+    const success = await deleteEmployee(editingEmployee.id);
     if (success) {
       setShowModal(false);
       setEditingEmployee(null);
     }
-  };
+  }, [deleteEmployee, editingEmployee]);
+
+  const handleAddEmployee = useCallback(() => {
+    setEditingEmployee(null);
+    setShowModal(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setShowModal(false);
+    setEditingEmployee(null);
+  }, []);
+
+  const handleTabChange = useCallback((tab) => {
+    setActiveTab(tab);
+  }, []);
+
+  const handleFilterChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }, []);
 
   const countByStatus = getEmployeesByStatus();
 
@@ -206,13 +205,7 @@ const Employees = () => {
             <ExportIcon />
             Exporter
           </Button>
-          <Button
-            primary
-            onClick={() => {
-              setEditingEmployee(null);
-              setShowModal(true);
-            }}
-          >
+          <Button primary onClick={handleAddEmployee}>
             <PlusIcon />
             Ajouter un employé
           </Button>
@@ -220,13 +213,16 @@ const Employees = () => {
       </PageHeader>
 
       <TabsContainer>
-        <Tab active={activeTab === "all"} onClick={() => setActiveTab("all")}>
+        <Tab
+          active={activeTab === "all"}
+          onClick={() => handleTabChange("all")}
+        >
           Tous
           <TabBadge active={activeTab === "all"}>{countByStatus.all}</TabBadge>
         </Tab>
         <Tab
           active={activeTab === "active"}
-          onClick={() => setActiveTab("active")}
+          onClick={() => handleTabChange("active")}
         >
           Actifs
           <TabBadge active={activeTab === "active"}>
@@ -235,7 +231,7 @@ const Employees = () => {
         </Tab>
         <Tab
           active={activeTab === "pending"}
-          onClick={() => setActiveTab("pending")}
+          onClick={() => handleTabChange("pending")}
         >
           En attente
           <TabBadge active={activeTab === "pending"}>
@@ -244,7 +240,7 @@ const Employees = () => {
         </Tab>
         <Tab
           active={activeTab === "inactive"}
-          onClick={() => setActiveTab("inactive")}
+          onClick={() => handleTabChange("inactive")}
         >
           Inactifs
           <TabBadge active={activeTab === "inactive"}>
@@ -256,47 +252,49 @@ const Employees = () => {
       <FormGrid>
         <FormSelect
           label="Département"
+          name="department"
           value={filters.department}
-          onChange={(e) =>
-            setFilters({ ...filters, department: e.target.value })
-          }
+          onChange={handleFilterChange}
         >
           <option value="">Tous les départements</option>
-          <option value="Marketing">Marketing</option>
-          <option value="Développement">Développement</option>
-          <option value="Design">Design</option>
-          <option value="Finance">Finance</option>
-          <option value="RH">RH</option>
+          {EMPLOYEE_DEPARTMENTS.map((dept) => (
+            <option key={dept.value} value={dept.value}>
+              {dept.label}
+            </option>
+          ))}
         </FormSelect>
-
         <FormSelect
           label="Rôle"
+          name="role"
           value={filters.role}
-          onChange={(e) => setFilters({ ...filters, role: e.target.value })}
+          onChange={handleFilterChange}
         >
           <option value="">Tous les rôles</option>
-          <option value="Manager">Manager</option>
-          <option value="Senior">Senior</option>
-          <option value="Junior">Junior</option>
-          <option value="Stagiaire">Stagiaire</option>
+          {EMPLOYEE_ROLES.map((role) => (
+            <option key={role.value} value={role.value}>
+              {role.label}
+            </option>
+          ))}
         </FormSelect>
-
         <FormSelect
           label="Statut"
+          name="status"
           value={filters.status}
-          onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+          onChange={handleFilterChange}
         >
           <option value="">Tous les statuts</option>
-          <option value="active">Actif</option>
-          <option value="pending">En attente</option>
-          <option value="inactive">Inactif</option>
+          {EMPLOYEE_STATUSES.map((status) => (
+            <option key={status.value} value={status.value}>
+              {status.label}
+            </option>
+          ))}
         </FormSelect>
       </FormGrid>
 
       <DataTable
         title={`Liste des employés (${filteredEmployees.length})`}
         data={filteredEmployees}
-        columns={columns}
+        columns={EMPLOYEE_TABLE_COLUMNS}
         loading={loading}
         pagination={true}
         pageSize={10}
@@ -305,31 +303,18 @@ const Employees = () => {
           setShowModal(true);
         }}
         emptyStateTitle="Aucun employé trouvé"
-        emptyStateMessage="Il n'y a pas d'employés correspondant à vos critères de recherche."
+        emptyStateMessage="Aucun employé ne correspond à vos critères de recherche."
       />
 
       {showModal && (
         <Modal
           title={editingEmployee ? "Modifier un employé" : "Ajouter un employé"}
-          onClose={() => {
-            setShowModal(false);
-            setEditingEmployee(null);
-          }}
+          onClose={handleCloseModal}
         >
           <EmployeeForm
             employee={editingEmployee}
             onSubmit={handleSubmit}
-            onDelete={
-              editingEmployee
-                ? () => {
-                    const success = deleteEmployee(editingEmployee.id);
-                    if (success) {
-                      setShowModal(false);
-                      setEditingEmployee(null);
-                    }
-                  }
-                : undefined
-            }
+            onDelete={editingEmployee ? handleDelete : undefined}
           />
         </Modal>
       )}

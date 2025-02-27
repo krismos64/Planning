@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import styled from "styled-components";
 import { Button } from "../ui";
 import { FormInput, FormSelect } from "../ui/Form";
+import {
+  EMPLOYEE_DEPARTMENTS,
+  EMPLOYEE_ROLES,
+  EMPLOYEE_STATUSES,
+} from "../../config/constants";
 
 const FormGrid = styled.div`
   display: grid;
@@ -17,27 +22,6 @@ const FormActions = styled.div`
   margin-top: 2rem;
 `;
 
-const departments = [
-  { value: "Marketing", label: "Marketing" },
-  { value: "Développement", label: "Développement" },
-  { value: "Design", label: "Design" },
-  { value: "Finance", label: "Finance" },
-  { value: "RH", label: "RH" },
-];
-
-const roles = [
-  { value: "Manager", label: "Manager" },
-  { value: "Senior", label: "Senior" },
-  { value: "Junior", label: "Junior" },
-  { value: "Stagiaire", label: "Stagiaire" },
-];
-
-const statuses = [
-  { value: "active", label: "Actif" },
-  { value: "pending", label: "En attente" },
-  { value: "inactive", label: "Inactif" },
-];
-
 const EmployeeForm = ({ employee, onSubmit, onDelete }) => {
   const [formData, setFormData] = useState({
     firstName: employee?.firstName || "",
@@ -49,18 +33,25 @@ const EmployeeForm = ({ employee, onSubmit, onDelete }) => {
     startDate: employee?.startDate || new Date().toISOString().split("T")[0],
   });
 
-  const handleChange = (e) => {
+  const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-  };
+  }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
+  const handleSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      onSubmit(formData);
+    },
+    [formData, onSubmit]
+  );
+
+  const handleDelete = useCallback(() => {
+    if (onDelete) onDelete();
+  }, [onDelete]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -95,7 +86,7 @@ const EmployeeForm = ({ employee, onSubmit, onDelete }) => {
           required
         >
           <option value="">Sélectionner un département</option>
-          {departments.map((dept) => (
+          {EMPLOYEE_DEPARTMENTS.map((dept) => (
             <option key={dept.value} value={dept.value}>
               {dept.label}
             </option>
@@ -109,7 +100,7 @@ const EmployeeForm = ({ employee, onSubmit, onDelete }) => {
           required
         >
           <option value="">Sélectionner un rôle</option>
-          {roles.map((role) => (
+          {EMPLOYEE_ROLES.map((role) => (
             <option key={role.value} value={role.value}>
               {role.label}
             </option>
@@ -122,7 +113,7 @@ const EmployeeForm = ({ employee, onSubmit, onDelete }) => {
           onChange={handleChange}
           required
         >
-          {statuses.map((status) => (
+          {EMPLOYEE_STATUSES.map((status) => (
             <option key={status.value} value={status.value}>
               {status.label}
             </option>
@@ -140,7 +131,7 @@ const EmployeeForm = ({ employee, onSubmit, onDelete }) => {
 
       <FormActions>
         {onDelete && (
-          <Button type="button" onClick={onDelete} danger>
+          <Button type="button" onClick={handleDelete} danger>
             Supprimer
           </Button>
         )}
@@ -152,4 +143,4 @@ const EmployeeForm = ({ employee, onSubmit, onDelete }) => {
   );
 };
 
-export default EmployeeForm;
+export default memo(EmployeeForm);
